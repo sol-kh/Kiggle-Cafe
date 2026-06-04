@@ -1,39 +1,81 @@
-import { View, Text, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
-const menuItems = [
-  { id: '1', category: 'Hot Drinks', name: 'Espresso' },
-  { id: '2', category: 'Hot Drinks', name: 'Cappuccino' },
-  { id: '3', category: 'Cold Drinks', name: 'Iced Latte' },
-  { id: '4', category: 'Cold Drinks', name: 'Iced Mocha' },
-  { id: '5', category: 'Desserts', name: 'Chocolate Cake Slice' },
-  { id: '6', category: 'Desserts', name: 'Blueberry Cheesecake' },
-  { id: '7', category: 'Sandwiches', name: 'Grilled Cheese Sandwich' },
-  { id: '8', category: 'Sandwiches', name: 'BLT' },
-  { id: '9', category: 'Pastas', name: 'Creamy Carbonara' },
-  { id: '10', category: 'Pastas', name: 'Aglio Olio' },
+const menuSections = [
+  {
+    title: 'Hot Drinks',
+    data: [
+      { id: '1', name: 'Espresso', price: '₱110', description: 'Rich, bold, and concentrated espresso shot.' },
+      { id: '2', name: 'Cappuccino', price: '₱140', description: 'Perfect balance of espresso, steamed milk, and airy foam.' },
+      { id: '3', name: 'Americano', price: '₱125', description: 'Smooth espresso diluted with hot water for a classic black coffee.' },
+    ],
+  },
+  {
+    title: 'Cold Drinks',
+    data: [
+      { id: '4', name: 'Iced Latte', price: '₱150', description: 'Chilled espresso poured over fresh milk and ice.' },
+      { id: '5', name: 'Iced Mocha', price: '₱160', description: 'Sweet chocolate combined with espresso, cold milk, and ice.' },
+      { id: '6', name: 'Caramel Macchiato', price: '₱165', description: 'Fresh milk layered with rich espresso and sweet caramel drizzle.' },
+    ],
+  },
 ];
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const flatData = menuSections.flatMap(section => [
+    { isHeader: true, title: section.title },
+    ...section.data
+  ]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Kiggle Cafe Menu</Text>
+      {/* Cute Styled Title Heading Box */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.heading}>KIGGLE COFFEE</Text>
+        <View style={styles.symbolRow}>
+          <View style={styles.decorativeLine} />
+          <Ionicons name="cafe" size={20} color="#e89dad" style={styles.coffeeIcon} />
+          <View style={styles.decorativeLine} />
+        </View>
+      </View>
 
       <FlatList
-        data={menuItems}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.category}>{item.category}</Text>
-            <Text style={styles.name}>{item.name}</Text>
+        data={flatData}
+        keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => {
+          if ('isHeader' in item) {
+            return <Text style={styles.sectionHeader}>{item.title}</Text>;
+          }
 
-            <Pressable
-              style={styles.button}
-              onPress={() => Alert.alert('Menu Item', `You selected ${item.name}`)}
-            >
-              <Text style={styles.buttonText}>View Item</Text>
-            </Pressable>
-          </View>
-        )}
+          return (
+            <View style={styles.itemCard}>
+              <View style={styles.textContainer}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.price}>{item.price}</Text>
+              </View>
+
+              <Pressable
+                style={styles.button}
+                onPress={() => 
+                  router.push({
+                    pathname: '/details',
+                    params: { 
+                      name: item.name, 
+                      category: item.id <= '3' ? 'Hot Drinks' : 'Cold Drinks', 
+                      price: item.price, 
+                      description: item.description 
+                    }
+                  })
+                }
+              >
+                <Text style={styles.buttonText}>View Item</Text>
+              </Pressable>
+            </View>
+          );
+        }}
       />
     </View>
   );
@@ -42,41 +84,86 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#2f302c',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    backgroundColor: '#FAF6F0', 
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+    marginTop: 10,
   },
   heading: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: 'white',
+    color: '#657b3b', 
+    letterSpacing: 1,
   },
-  item: {
-    marginBottom: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#888',
-    paddingBottom: 15,
+  symbolRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    width: '50%',
   },
-  category: {
-    fontSize: 13,
-    color: '#aaa',
+  decorativeLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: '#e89dad', 
+    opacity: 0.5,
+  },
+  coffeeIcon: {
+    paddingHorizontal: 10,
+  },
+  sectionHeader: {
+    fontSize: 20, 
+    fontWeight: '700',
+    color: '#657b3b',
+    marginTop: 18,
+    marginBottom: 12,
+    paddingLeft: 4,
+  },
+  itemCard: {
+    backgroundColor: '#ffffff', 
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 20, 
+    marginBottom: 14,
+    borderWidth: 2,
+    borderColor: '#e89dad', 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#657b3b',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  textContainer: {
+    flex: 1,
+    marginRight: 10,
+    justifyContent: 'center',
   },
   name: {
-    fontSize: 18,
+    fontSize: 21, 
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 8,
+    color: '#657b3b', 
+    marginBottom: 4, 
+  },
+  price: {
+    fontSize: 16, 
+    color: '#7a7a7a',
+    fontWeight: '600',
   },
   button: {
-    borderWidth: 1,
-    borderColor: '#aaa',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
+    backgroundColor: '#657b3b', 
+    paddingVertical: 12, 
+    paddingHorizontal: 18,
+    borderRadius: 12,
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+    fontSize: 14,
   },
 });
