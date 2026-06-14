@@ -3,19 +3,26 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function DetailsScreen() {
   const router = useRouter();
-  const { name, category, price, description } = useLocalSearchParams();
+
+  const { title, category, description, ingredients } = useLocalSearchParams();
 
   return (
     <View style={styles.container}>
       <View style={styles.detailCard}>
         <Text style={styles.category}>{category}</Text>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.price}>{price}</Text>
-        
+        <Text style={styles.name}>{title}</Text>
+
         <View style={styles.divider} />
-        
+
         <Text style={styles.descriptionLabel}>Product Details</Text>
-        <Text style={styles.descriptionText}>{description}</Text>
+        <Text style={styles.descriptionText}>
+          {description || 'No description available.'}
+        </Text>
+
+        <Text style={styles.descriptionLabel}>Ingredients</Text>
+        <Text style={styles.descriptionText}>
+          {ingredients || 'No ingredients listed.'}
+        </Text>
       </View>
 
       <Pressable style={styles.backButton} onPress={() => router.back()}>
@@ -29,7 +36,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: '#FAF6F0', 
+    backgroundColor: '#FAF6F0',
     justifyContent: 'center',
   },
   detailCard: {
@@ -37,7 +44,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     borderWidth: 3,
-    borderColor: '#e89dad', 
+    borderColor: '#e89dad',
     marginBottom: 25,
     shadowColor: '#657b3b',
     shadowOffset: { width: 0, height: 3 },
@@ -48,20 +55,15 @@ const styles = StyleSheet.create({
   category: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#e89dad', 
+    color: '#e89dad',
     textTransform: 'uppercase',
     marginBottom: 4,
   },
   name: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#657b3b', 
+    color: '#657b3b',
     marginBottom: 4,
-  },
-  price: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#4a4a4a',
   },
   divider: {
     height: 2,
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: '#657b3b',
+    marginTop: 10,
     marginBottom: 6,
   },
   descriptionText: {
@@ -80,7 +83,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   backButton: {
-    backgroundColor: '#657b3b', 
+    backgroundColor: '#657b3b',
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',
